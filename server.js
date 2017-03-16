@@ -37,8 +37,6 @@ app.use(express.static(pathname));
 app.get("/", (req, res) => {
     renderView(res, 'home');
 });
-//app.get("/projects", (req, res) => {renderView(res, 'projects')});
-//app.get("/projects/:id", (req, res) => {renderView(res, 'projects')});
 
 routes.forEach((theRoute) => {
     app.get("/" + theRoute, (req, res) => {
