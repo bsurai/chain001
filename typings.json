@@ -1,0 +1,11 @@
+{
+  "name": "node.server",
+  "dependencies": {
+    "express": "registry:dt/express#4.0.0+20170118060322",
+    "soap": "registry:dt/soap#0.0.0+20170213140747"
+  },
+  "globalDependencies": {
+    "express-handlebars": "registry:dt/express-handlebars#0.0.0+20160510002910",
+    "node": "registry:dt/node#7.0.0+20170310052549"
+  }
+}
