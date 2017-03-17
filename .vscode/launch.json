@@ -10,7 +10,7 @@
             "request": "launch",
             "name": "Запустить программу",
             "address": "localhost",
-            "program": "${file}"
+            "program": "${workspaceRoot}/server.bundle.js",//"${file}"
         },
         {
             "type": "node",
