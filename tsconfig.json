@@ -1,0 +1,21 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "module": "es2015",
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "pretty": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es2017",
+    "watch": false
+  },
+  
+  "exclude": [
+    "node_modules",
+    "wwwroot"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+    "plugins": [
+        "eslint-plugin-react"
+    ],
+    "ecmaFeatures": {
+        "jsx": true
+    },
+    "env": {
+        "es6": true
+    },
+    "rules": {
+        "react/jsx-uses-vars": 1,
+        "react/react-in-jsx-scope": 1,
+        "react/jsx-sort-prop-types": 1
+    }
+}

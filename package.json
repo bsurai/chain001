@@ -6,20 +6,40 @@
   "dependencies": {
     "express":"4.15.2",
     "express-handlebars": "3.0.0",
+    "react": "15.4.2",
+    "react-dom": "15.4.2",
+    "redux": "3.6.0",
+    "react-redux": "5.0.2",
+    "redux-thunk": "2.2.0",
+    "react-router": "3.0.2",
+    "react-router-redux": "4.0.8",
     "soap": "0.18.0",
     "soap-as-promised":"1.16.0"
   },
   "devDependencies": {
-    "tslint": "4.5.1",
+    "awesome-typescript-loader": "3.0.8",
+    "babel-core": "6.22.1",
+    "babel-eslint": "7.1.1",
+    "babel-loader": "6.2.10",
+    "babel-polyfill": "6.22.0",
+    "babel-runtime": "6.22.0",
     "eslint": "3.17.1",
     "eslint-plugin-react":"6.10.0",
     "eslint-config-defaults": "9.0.0",
-    "babel-eslint": "7.1.1",
-    "typescript":"2.2.1"
+    "handlebars-loader":"1.4.0",
+    "less": "2.7.2",
+    "less-loader": "2.2.3",
+    "raw-loader": "0.5.1",
+    "style-loader": "0.13.1", 
+    "source-map-loader":"0.2.0",
+    "typescript":"2.2.1",
+    "tslint": "4.5.1",
+    "webpack": "2.2.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.bundle.js",
+    "dev": "npm start & webpack-dev-server --progress --colors"
   },
   "author": "Bogdan Surai",
   "license": "ISC"
