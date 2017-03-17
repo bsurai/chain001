@@ -49,7 +49,6 @@ routes.forEach((theRoute) => {
     });
 }, this);
 
-
 app.listen(process.env.PORT || 3000, function () {
     console.log('Приклад застосунку, який прослуховує 3000-ий порт!');
 });
