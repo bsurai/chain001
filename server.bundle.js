@@ -100,6 +100,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+// import * as DB from "./lib/db";
+/*let proj:DB.IProjects[] = DB.getProjects({
+    customerID: undefined,
+    id: undefined,
+    name: undefined,
+    charId: undefined
+});*/
 const handlebars = __WEBPACK_IMPORTED_MODULE_2_express_handlebars__["create"]({
     defaultLayout: "external"
 });
@@ -107,8 +114,10 @@ const app = __WEBPACK_IMPORTED_MODULE_1_express__();
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 let internalRoutes = ["projects"];
-const renderView = (res, view = "home") => {
-    res.render(view);
+const renderView = (res, view = "home", layout = "external") => {
+    res.render(view, {
+        layout
+    });
 };
 const getStatic = (req, res, theRoute = "") => {
     let url = req.originalUrl;
@@ -130,10 +139,10 @@ app.get("/", (req, res) => {
 });
 internalRoutes.forEach((theRoute) => {
     app.get("/" + theRoute, (req, res) => {
-        renderView(res, theRoute);
+        renderView(res, theRoute, "internal");
     });
     app.get("/" + theRoute + "/:id", (req, res) => {
-        renderView(res, theRoute);
+        renderView(res, theRoute, "internal");
     });
     app.get("/" + theRoute + "/*", (req, res) => {
         getStatic(req, res, theRoute);
