@@ -101,12 +101,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 const handlebars = __WEBPACK_IMPORTED_MODULE_2_express_handlebars__["create"]({
-    defaultLayout: "main"
+    defaultLayout: "external"
 });
 const app = __WEBPACK_IMPORTED_MODULE_1_express__();
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
-let routes = ["projects"];
+let internalRoutes = ["projects"];
 const renderView = (res, view = "home") => {
     res.render(view);
 };
@@ -128,10 +128,7 @@ app.use(__WEBPACK_IMPORTED_MODULE_1_express__["static"](pathname));
 app.get("/", (req, res) => {
     renderView(res, "home");
 });
-/*app.get("/*", (req, res) => {
-    getStatic(req, res, "");
-});*/
-routes.forEach((theRoute) => {
+internalRoutes.forEach((theRoute) => {
     app.get("/" + theRoute, (req, res) => {
         renderView(res, theRoute);
     });
@@ -142,9 +139,6 @@ routes.forEach((theRoute) => {
         getStatic(req, res, theRoute);
     });
 }, this);
-/*app.get("/*", (req, res) => {
-    getStatic(req, res, "");
-});*/
 app.listen(process.env.PORT || 3000, () => {
     console.log("Приклад застосунку, який прослуховує 3000-ий порт!");
 });

@@ -5,14 +5,14 @@ import * as EXHB from "express-handlebars";
 import * as core from "express-serve-static-core";
 
 const handlebars:Exphbs = EXHB.create({
-    defaultLayout: "main"
+    defaultLayout: "external"
 });
 
 const app:core.Express = Express();
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 
-let routes:string[] = ["projects"];
+let internalRoutes:string[] = ["projects"];
 
 const renderView = (res, view = "home") => {
     res.render(view);
@@ -38,11 +38,7 @@ app.get("/", (req, res) => {
     renderView(res, "home");
 });
 
-/*app.get("/*", (req, res) => {
-    getStatic(req, res, "");
-});*/
-
-routes.forEach((theRoute) => {
+internalRoutes.forEach((theRoute) => {
     app.get("/" + theRoute, (req, res) => {
         renderView(res, theRoute);
     });
@@ -53,10 +49,6 @@ routes.forEach((theRoute) => {
         getStatic(req, res, theRoute);
     });
 }, this);
-
-/*app.get("/*", (req, res) => {
-    getStatic(req, res, "");
-});*/
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("Приклад застосунку, який прослуховує 3000-ий порт!");
