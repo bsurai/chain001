@@ -3,10 +3,10 @@ import * as Files from "fs";
 import * as Express from "express";
 import * as EXHB from "express-handlebars";
 import * as core from "express-serve-static-core";
-// import * as DB from "./lib/db";
+ //import * as DB from "./lib/db";
 
 
-/*let proj:DB.IProjects[] = DB.getProjects({
+/*let proj:Promise<DB.IProjects[]> = DB.getProjects({
     customerID: undefined,
     id: undefined,
     name: undefined,

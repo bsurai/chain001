@@ -160,7 +160,7 @@ let projects: IProjects[] = [
     }
 ];
 
-export const getProjects = (params: IProjects) =>  {
+export const getProjects = async (params: IProjects) =>  {
     return projects.filter((project: IProjects) => {
         return (!params.charId || project.charId === params.charId)
             && (!params.customerID || project.customerID === params.customerID)
