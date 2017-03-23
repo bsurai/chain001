@@ -63,64 +63,89 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = require("express");
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views__ = __webpack_require__(3);
+
+let internalRoutes = ["projects"];
+let externalRoutes = ["", "home", "apply", "apply-post", "login", "login-post", "about", "contacts", "info1", "info2", "info3"];
+const invokeStatic = (app, theRoute) => {
+    app.get("/" + theRoute + "/*", (req, res) => {
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["a" /* getStatic */])(req, res, theRoute);
+    });
+};
+const invokeExternalRoutes = (app) => {
+    externalRoutes.forEach((theRoute) => {
+        let path = "/" + theRoute;
+        if (theRoute.endsWith("-post")) {
+            app.post(path, (req, res) => {
+                res.redirect(303, "/projects");
+            });
+        }
+        else {
+            app.get(path, (req, res) => {
+                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, theRoute);
+            });
+            invokeStatic(app, theRoute);
+        }
+    });
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = invokeExternalRoutes;
+
+const invokeInternalRoutes = (app) => {
+    internalRoutes.forEach((theRoute) => {
+        app.get("/" + theRoute, (req, res) => {
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, theRoute, "internal");
+        });
+        app.get("/" + theRoute + "/:id", (req, res) => {
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, theRoute, "internal");
+        });
+        invokeStatic(app, theRoute);
+    });
+};
+/* harmony export (immutable) */ __webpack_exports__["b"] = invokeInternalRoutes;
+
+
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("express-handlebars");
+module.exports = require("express");
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("fs");
+module.exports = require("express-handlebars");
 
 /***/ }),
 /* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_fs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_express_handlebars__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_express_handlebars___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_express_handlebars__);
-/*jshint esversion: 6 */
 
-
-
-// import * as DB from "./lib/db";
-/*let proj:DB.IProjects[] = DB.getProjects({
-    customerID: undefined,
-    id: undefined,
-    name: undefined,
-    charId: undefined
-});*/
-const handlebars = __WEBPACK_IMPORTED_MODULE_2_express_handlebars__["create"]({
-    defaultLayout: "external"
-});
-const app = __WEBPACK_IMPORTED_MODULE_1_express__();
-app.engine("handlebars", handlebars.engine);
-app.set("view engine", "handlebars");
-let internalRoutes = ["projects"];
 const renderView = (res, view = "home", layout = "external") => {
+    if (!view || view === "") {
+        view = "home";
+    }
+    ;
     res.render(view, {
         layout
     });
 };
+/* harmony export (immutable) */ __webpack_exports__["b"] = renderView;
+
 const getStatic = (req, res, theRoute = "") => {
-    let url = req.originalUrl;
+    let url = req.url;
     let pathname = __dirname + url.replace(theRoute, "public");
     let file = __WEBPACK_IMPORTED_MODULE_0_fs__["createReadStream"](pathname);
     file.on("open", () => {
@@ -129,25 +154,45 @@ const getStatic = (req, res, theRoute = "") => {
     });
     file.on("error", (err) => {
         res.statusCode = 404;
+        res.sendStatus(404);
         console.log(err);
     });
 };
-let pathname = __dirname + "/public";
-app.use(__WEBPACK_IMPORTED_MODULE_1_express__["static"](pathname));
-app.get("/", (req, res) => {
-    renderView(res, "home");
+/* harmony export (immutable) */ __webpack_exports__["a"] = getStatic;
+
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express_handlebars__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express_handlebars___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_express_handlebars__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_routes__ = __webpack_require__(0);
+/*jshint esversion: 6 */
+
+
+
+const handlebars = __WEBPACK_IMPORTED_MODULE_1_express_handlebars__["create"]({
+    defaultLayout: "external"
 });
-internalRoutes.forEach((theRoute) => {
-    app.get("/" + theRoute, (req, res) => {
-        renderView(res, theRoute, "internal");
-    });
-    app.get("/" + theRoute + "/:id", (req, res) => {
-        renderView(res, theRoute, "internal");
-    });
-    app.get("/" + theRoute + "/*", (req, res) => {
-        getStatic(req, res, theRoute);
-    });
-}, this);
+const app = __WEBPACK_IMPORTED_MODULE_0_express__();
+app.engine("handlebars", handlebars.engine);
+app.set("view engine", "handlebars");
+let pathname = __dirname + "/public";
+app.use(__WEBPACK_IMPORTED_MODULE_0_express__["static"](pathname));
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib_routes__["a" /* invokeExternalRoutes */])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib_routes__["b" /* invokeInternalRoutes */])(app);
 app.listen(process.env.PORT || 3000, () => {
     console.log("Приклад застосунку, який прослуховує 3000-ий порт!");
 });
