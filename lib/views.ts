@@ -1,7 +1,7 @@
 import * as Files from "fs";
 import * as core from "express-serve-static-core";
 
-export const renderView = (res:core.Response, view = "home", layout = "external") => {
+export const renderView = (res: core.Response, view = "home", layout = "external") => {
     if (!view || view === "") { view = "home"; };
 
     res.render(view, {
@@ -9,8 +9,10 @@ export const renderView = (res:core.Response, view = "home", layout = "external"
     });
 };
 
-export const getStatic = (req:core.Request, res:core.Response, theRoute = "") => {
-    let url: string = req.url;
+export const getStatic = (req: core.Request, res: core.Response, theRoute = "") => {
+    let ind: number = req.url.indexOf("/public");
+    let url: string = req.url.slice(ind);
+
     let pathname: string = __dirname + url.replace(theRoute, "public");
     let file: Files.ReadStream = Files.createReadStream(pathname);
     file.on("open", () => {

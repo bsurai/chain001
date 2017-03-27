@@ -13,7 +13,7 @@ app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 
 let pathname: string = __dirname + "/public";
-app.use(Express.static(pathname));
+app.use("/public", Express.static(pathname));
 
 invokeExternalRoutes(app);
 invokeInternalRoutes(app);

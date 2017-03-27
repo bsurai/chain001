@@ -73,10 +73,10 @@
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views__ = __webpack_require__(3);
 
-let internalRoutes = ["projects"];
+let internalRoutes = ["", "projects", "projects/:id"];
 let externalRoutes = ["", "home", "apply", "apply-post", "login", "login-post", "about", "contacts", "info1", "info2", "info3"];
 const invokeStatic = (app, theRoute) => {
-    app.get("/" + theRoute + "/*", (req, res) => {
+    app.get("/" + theRoute + "/public/*", (req, res) => {
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["a" /* getStatic */])(req, res, theRoute);
     });
 };
@@ -100,14 +100,17 @@ const invokeExternalRoutes = (app) => {
 
 const invokeInternalRoutes = (app) => {
     internalRoutes.forEach((theRoute) => {
-        app.get("/" + theRoute, (req, res) => {
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, theRoute, "internal");
+        let path = ":customer/" + theRoute;
+        app.get("/" + path, (req, res) => {
+            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, "spa", "internal");
         });
-        app.get("/" + theRoute + "/:id", (req, res) => {
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, theRoute, "internal");
-        });
-        invokeStatic(app, theRoute);
+        /*app.get("/:customer" + theRoute + "/:id", (req, res) => {
+            renderView(res, "spa", "internal");
+        });*/
+        invokeStatic(app, path);
+        // invokeStatic(app, theRoute + "/:id");
     });
+    invokeStatic(app, ":customer");
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = invokeInternalRoutes;
 
@@ -145,7 +148,8 @@ const renderView = (res, view = "home", layout = "external") => {
 /* harmony export (immutable) */ __webpack_exports__["b"] = renderView;
 
 const getStatic = (req, res, theRoute = "") => {
-    let url = req.url;
+    let ind = req.url.indexOf("/public");
+    let url = req.url.slice(ind);
     let pathname = __dirname + url.replace(theRoute, "public");
     let file = __WEBPACK_IMPORTED_MODULE_0_fs__["createReadStream"](pathname);
     file.on("open", () => {
@@ -190,7 +194,7 @@ const app = __WEBPACK_IMPORTED_MODULE_0_express__();
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 let pathname = __dirname + "/public";
-app.use(__WEBPACK_IMPORTED_MODULE_0_express__["static"](pathname));
+app.use("/public", __WEBPACK_IMPORTED_MODULE_0_express__["static"](pathname));
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib_routes__["a" /* invokeExternalRoutes */])(app);
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib_routes__["b" /* invokeInternalRoutes */])(app);
 app.listen(process.env.PORT || 3000, () => {

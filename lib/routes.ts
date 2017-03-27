@@ -1,18 +1,18 @@
 import * as core from "express-serve-static-core";
 import { renderView, getStatic } from "./views";
 
-let internalRoutes: string[] = ["projects"];
+let internalRoutes: string[] = ["", "projects", "projects/:id"];
 let externalRoutes: string[] = ["", "home", "apply", "apply-post", "login", "login-post", "about", "contacts", "info1", "info2", "info3"];
 
 const invokeStatic = (app: core.Express, theRoute: string) => {
-    app.get("/" + theRoute + "/*", (req, res) => {
+    app.get("/" + theRoute + "/public/*", (req, res) => {
         getStatic(req, res, theRoute);
     });
 };
 
 export const invokeExternalRoutes = (app: core.Express) => {
     externalRoutes.forEach((theRoute: string) => {
-        let path:string = "/" + theRoute;
+        let path: string = "/" + theRoute;
 
         if (theRoute.endsWith("-post")) {
             app.post(path, (req: core.Request, res: core.Response) => {
@@ -29,12 +29,15 @@ export const invokeExternalRoutes = (app: core.Express) => {
 
 export const invokeInternalRoutes = (app: core.Express) => {
     internalRoutes.forEach((theRoute: string) => {
-        app.get("/" + theRoute, (req: core.Request, res: core.Response) => {
-            renderView(res, theRoute, "internal");
+        let path: string = ":customer/" + theRoute;
+        app.get("/" + path, (req: core.Request, res: core.Response) => {
+            renderView(res, "spa", "internal");
         });
-        app.get("/" + theRoute + "/:id", (req, res) => {
-            renderView(res, theRoute, "internal");
-        });
-        invokeStatic(app, theRoute);
+        /*app.get("/:customer" + theRoute + "/:id", (req, res) => {
+            renderView(res, "spa", "internal");
+        });*/
+        invokeStatic(app, path);
+        // invokeStatic(app, theRoute + "/:id");
     });
+    invokeStatic(app, ":customer");
 };
