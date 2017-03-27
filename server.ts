@@ -1,8 +1,9 @@
 /*jshint esversion: 6 */
 import * as Express from "express";
 import * as EXHB from "express-handlebars";
+import * as bodyParser from "body-parser";
 import * as core from "express-serve-static-core";
-import { invokeExternalRoutes, invokeInternalRoutes } from "./lib/routes";
+import { invokeExternalRoutesGet, invokeInternalRoutesGet, invokeExternalRoutesPost } from "./lib/routes";
 
 const handlebars: Exphbs = EXHB.create({
     defaultLayout: "external"
@@ -15,8 +16,13 @@ app.set("view engine", "handlebars");
 let pathname: string = __dirname + "/public";
 app.use("/public", Express.static(pathname));
 
-invokeExternalRoutes(app);
-invokeInternalRoutes(app);
+let optionsUrlencoded: bodyParser.OptionsUrlencoded = { extended: false };
+app.use(bodyParser.urlencoded(optionsUrlencoded));
+//app.use(bodyParser.json());
+
+invokeExternalRoutesGet(app);
+invokeInternalRoutesGet(app);
+invokeExternalRoutesPost(app);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("Приклад застосунку, який прослуховує 3000-ий порт!");

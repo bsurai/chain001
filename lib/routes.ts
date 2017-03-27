@@ -1,43 +1,50 @@
 import * as core from "express-serve-static-core";
 import { renderView, getStatic } from "./views";
 
-let internalRoutes: string[] = ["", "projects", "projects/:id"];
-let externalRoutes: string[] = ["", "home", "apply", "apply-post", "login", "login-post", "about", "contacts", "info1", "info2", "info3"];
+let internalRoutesGet: string[] = ["projects", "projects/:id"];
+let externalRoutesGet: string[] = ["", "home", "apply", "about", "contacts", "info1", "info2", "info3"];
+let externalRoutesPost: string[] = ["apply-post", ":customer/login-post"];
 
-const invokeStatic = (app: core.Express, theRoute: string) => {
+const invokeRouteGet = (app: core.Express, theRoute: string, view: string, layout: string = "") => {
+    app.get("/" + theRoute, (req, res) => {
+        renderView(res, view, layout);
+    });
+};
+
+const invokeStaticGet = (app: core.Express, theRoute: string) => {
     app.get("/" + theRoute + "/public/*", (req, res) => {
         getStatic(req, res, theRoute);
     });
 };
 
-export const invokeExternalRoutes = (app: core.Express) => {
-    externalRoutes.forEach((theRoute: string) => {
-        let path: string = "/" + theRoute;
+export const invokeExternalRoutesGet = (app: core.Express) => {
 
-        if (theRoute.endsWith("-post")) {
-            app.post(path, (req: core.Request, res: core.Response) => {
-                res.redirect(303, "/projects");
-            });
-        } else {
-            app.get(path, (req: core.Request, res: core.Response) => {
-                renderView(res, theRoute);
-            });
-            invokeStatic(app, theRoute);
-        }
+    invokeRouteGet(app, ":customer/login", "login");
+    invokeStaticGet(app, ":customer/login");
+
+    externalRoutesGet.forEach((theRoute: string) => {
+        invokeRouteGet(app, theRoute, theRoute);
+        invokeStaticGet(app, theRoute);
     });
 };
 
-export const invokeInternalRoutes = (app: core.Express) => {
-    internalRoutes.forEach((theRoute: string) => {
+export const invokeInternalRoutesGet = (app: core.Express) => {
+    invokeRouteGet(app, ":customer", "spa");
+    invokeStaticGet(app, ":customer");
+
+    internalRoutesGet.forEach((theRoute: string) => {
         let path: string = ":customer/" + theRoute;
-        app.get("/" + path, (req: core.Request, res: core.Response) => {
-            renderView(res, "spa", "internal");
-        });
-        /*app.get("/:customer" + theRoute + "/:id", (req, res) => {
-            renderView(res, "spa", "internal");
-        });*/
-        invokeStatic(app, path);
-        // invokeStatic(app, theRoute + "/:id");
+        invokeRouteGet(app, path, "spa", "internal");
+        invokeStaticGet(app, path);
     });
-    invokeStatic(app, ":customer");
+};
+
+export const invokeExternalRoutesPost = (app: core.Express) => {
+    app.post("/apply-post", (req: core.Request, res: core.Response) => {
+        res.redirect(303, "/");
+    });
+
+    app.post("/:customer/login-post", (req: core.Request, res: core.Response) => {
+        res.redirect(303, "/" + req.params.customer + "/projects");
+    });
 };

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,48 +71,58 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views__ = __webpack_require__(4);
 
-let internalRoutes = ["", "projects", "projects/:id"];
-let externalRoutes = ["", "home", "apply", "apply-post", "login", "login-post", "about", "contacts", "info1", "info2", "info3"];
-const invokeStatic = (app, theRoute) => {
+let internalRoutesGet = ["projects", "projects/:id"];
+let externalRoutesGet = ["", "home", "apply", "about", "contacts", "info1", "info2", "info3"];
+let externalRoutesPost = ["apply-post", ":customer/login-post"];
+const invokeRouteGet = (app, theRoute, view, layout = "") => {
+    app.get("/" + theRoute, (req, res) => {
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["a" /* renderView */])(res, view, layout);
+    });
+};
+const invokeStaticGet = (app, theRoute) => {
     app.get("/" + theRoute + "/public/*", (req, res) => {
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["a" /* getStatic */])(req, res, theRoute);
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* getStatic */])(req, res, theRoute);
     });
 };
-const invokeExternalRoutes = (app) => {
-    externalRoutes.forEach((theRoute) => {
-        let path = "/" + theRoute;
-        if (theRoute.endsWith("-post")) {
-            app.post(path, (req, res) => {
-                res.redirect(303, "/projects");
-            });
-        }
-        else {
-            app.get(path, (req, res) => {
-                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, theRoute);
-            });
-            invokeStatic(app, theRoute);
-        }
+const invokeExternalRoutesGet = (app) => {
+    invokeRouteGet(app, ":customer/login", "login");
+    invokeStaticGet(app, ":customer/login");
+    externalRoutesGet.forEach((theRoute) => {
+        invokeRouteGet(app, theRoute, theRoute);
+        invokeStaticGet(app, theRoute);
     });
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = invokeExternalRoutes;
+/* harmony export (immutable) */ __webpack_exports__["a"] = invokeExternalRoutesGet;
 
-const invokeInternalRoutes = (app) => {
-    internalRoutes.forEach((theRoute) => {
+const invokeInternalRoutesGet = (app) => {
+    invokeRouteGet(app, ":customer", "spa");
+    invokeStaticGet(app, ":customer");
+    internalRoutesGet.forEach((theRoute) => {
         let path = ":customer/" + theRoute;
-        app.get("/" + path, (req, res) => {
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* renderView */])(res, "spa", "internal");
-        });
-        /*app.get("/:customer" + theRoute + "/:id", (req, res) => {
-            renderView(res, "spa", "internal");
-        });*/
-        invokeStatic(app, path);
-        // invokeStatic(app, theRoute + "/:id");
+        invokeRouteGet(app, path, "spa", "internal");
+        invokeStaticGet(app, path);
     });
-    invokeStatic(app, ":customer");
 };
-/* harmony export (immutable) */ __webpack_exports__["b"] = invokeInternalRoutes;
+/* harmony export (immutable) */ __webpack_exports__["b"] = invokeInternalRoutesGet;
+
+const invokeExternalRoutesPost = (app) => {
+    app.post("/apply-post", (req, res) => {
+        res.redirect(303, "/");
+    });
+    app.post("/:customer/login-post", (req, res) => {
+        res.redirect(303, "/" + req.params.customer + "/projects");
+    });
+    /*externalRoutesPost.forEach((theRoute: string) => {
+        let path: string = "/" + theRoute;
+
+        app.post(path, (req: core.Request, res: core.Response) => {
+            res.redirect(303, "/projects");
+        });
+    });*/
+};
+/* harmony export (immutable) */ __webpack_exports__["c"] = invokeExternalRoutesPost;
 
 
 
@@ -120,32 +130,36 @@ const invokeInternalRoutes = (app) => {
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("express");
+module.exports = require("body-parser");
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("express-handlebars");
+module.exports = require("express");
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+module.exports = require("express-handlebars");
+
+/***/ }),
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_fs__);
 
-const renderView = (res, view = "home", layout = "external") => {
-    if (!view || view === "") {
-        view = "home";
-    }
-    ;
+const renderView = (res, view = "home", layout = "") => {
+    view = view || "home";
+    layout = layout || "external";
     res.render(view, {
         layout
     });
 };
-/* harmony export (immutable) */ __webpack_exports__["b"] = renderView;
+/* harmony export (immutable) */ __webpack_exports__["a"] = renderView;
 
 const getStatic = (req, res, theRoute = "") => {
     let ind = req.url.indexOf("/public");
@@ -162,28 +176,31 @@ const getStatic = (req, res, theRoute = "") => {
         console.log(err);
     });
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = getStatic;
+/* harmony export (immutable) */ __webpack_exports__["b"] = getStatic;
 
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express_handlebars__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express_handlebars__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express_handlebars___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_express_handlebars__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_routes__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_body_parser__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_body_parser__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lib_routes__ = __webpack_require__(0);
 /*jshint esversion: 6 */
+
 
 
 
@@ -195,8 +212,12 @@ app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 let pathname = __dirname + "/public";
 app.use("/public", __WEBPACK_IMPORTED_MODULE_0_express__["static"](pathname));
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib_routes__["a" /* invokeExternalRoutes */])(app);
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__lib_routes__["b" /* invokeInternalRoutes */])(app);
+let optionsUrlencoded = { extended: false };
+app.use(__WEBPACK_IMPORTED_MODULE_2_body_parser__["urlencoded"](optionsUrlencoded));
+//app.use(bodyParser.json());
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["a" /* invokeExternalRoutesGet */])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["b" /* invokeInternalRoutesGet */])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["c" /* invokeExternalRoutesPost */])(app);
 app.listen(process.env.PORT || 3000, () => {
     console.log("Приклад застосунку, який прослуховує 3000-ий порт!");
 });

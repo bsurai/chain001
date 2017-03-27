@@ -1,8 +1,9 @@
 import * as Files from "fs";
 import * as core from "express-serve-static-core";
 
-export const renderView = (res: core.Response, view = "home", layout = "external") => {
-    if (!view || view === "") { view = "home"; };
+export const renderView = (res: core.Response, view: string = "home", layout: string = "") => {
+    view = view || "home";
+    layout = layout || "external";
 
     res.render(view, {
         layout
