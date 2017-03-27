@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,19 +71,24 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__views__ = __webpack_require__(4);
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__db__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__views__ = __webpack_require__(5);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "internalRoutesGet", function() { return internalRoutesGet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "externalRoutesGet", function() { return externalRoutesGet; });
+
 
 let internalRoutesGet = ["projects", "projects/:id"];
 let externalRoutesGet = ["", "home", "apply", "about", "contacts", "info1", "info2", "info3"];
-let externalRoutesPost = ["apply-post", ":customer/login-post"];
+//let externalRoutesPost: string[] = ["apply-post", ":customer/login-post"];
 const invokeRouteGet = (app, theRoute, view, layout = "") => {
     app.get("/" + theRoute, (req, res) => {
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["a" /* renderView */])(res, view, layout);
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__views__["a" /* renderView */])(res, view, layout);
     });
 };
 const invokeStaticGet = (app, theRoute) => {
     app.get("/" + theRoute + "/public/*", (req, res) => {
-        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__views__["b" /* getStatic */])(req, res, theRoute);
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__views__["b" /* getStatic */])(req, res, theRoute);
     });
 };
 const invokeExternalRoutesGet = (app) => {
@@ -94,7 +99,7 @@ const invokeExternalRoutesGet = (app) => {
         invokeStaticGet(app, theRoute);
     });
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = invokeExternalRoutesGet;
+/* harmony export (immutable) */ __webpack_exports__["invokeExternalRoutesGet"] = invokeExternalRoutesGet;
 
 const invokeInternalRoutesGet = (app) => {
     invokeRouteGet(app, ":customer", "spa");
@@ -105,24 +110,23 @@ const invokeInternalRoutesGet = (app) => {
         invokeStaticGet(app, path);
     });
 };
-/* harmony export (immutable) */ __webpack_exports__["b"] = invokeInternalRoutesGet;
+/* harmony export (immutable) */ __webpack_exports__["invokeInternalRoutesGet"] = invokeInternalRoutesGet;
 
 const invokeExternalRoutesPost = (app) => {
     app.post("/apply-post", (req, res) => {
-        res.redirect(303, "/");
+        let err = __WEBPACK_IMPORTED_MODULE_0__db__["a" /* applyNewCustomer */](req.body);
+        if (err) {
+            res.send(400, err);
+        }
+        else {
+            res.redirect(303, "/");
+        }
     });
     app.post("/:customer/login-post", (req, res) => {
         res.redirect(303, "/" + req.params.customer + "/projects");
     });
-    /*externalRoutesPost.forEach((theRoute: string) => {
-        let path: string = "/" + theRoute;
-
-        app.post(path, (req: core.Request, res: core.Response) => {
-            res.redirect(303, "/projects");
-        });
-    });*/
 };
-/* harmony export (immutable) */ __webpack_exports__["c"] = invokeExternalRoutesPost;
+/* harmony export (immutable) */ __webpack_exports__["invokeExternalRoutesPost"] = invokeExternalRoutesPost;
 
 
 
@@ -149,7 +153,171 @@ module.exports = require("express-handlebars");
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__routes__ = __webpack_require__(0);
+
+;
+;
+;
+let roles = [
+    {
+        id: 1,
+        name: "manager",
+        projects: "write",
+        issues: "write",
+        persons: "write"
+    },
+    {
+        id: 2,
+        name: "employee",
+        projects: "read",
+        issues: "write",
+        persons: "read"
+    }
+];
+let customers = [
+    {
+        id: 1,
+        name: "Geo Alliance",
+        isActive: true,
+        route: "GA",
+        email: "andrew.pshinka@geo-alliance.com.ua",
+        phone: "+38067*******",
+        person: "andrew.pshinka"
+    },
+    {
+        id: 2,
+        name: "l.savostyan",
+        isActive: true,
+        route: "support",
+        email: "l.savostyan@ukr.net",
+        phone: "+38063*******",
+        person: "l.savostyan@ukr.net"
+    }
+];
+let users = [
+    {
+        isAdmin: false,
+        customerId: 1,
+        id: 1,
+        name: "bs08@ukr.net",
+        password: "123",
+        email: "bs08@ukr.net",
+        phone: "+38063*******",
+        roleId: 2,
+        isActive: true
+    },
+    {
+        isAdmin: false,
+        customerId: 1,
+        id: 2,
+        name: "andrew.pshinka@geo-alliance.com.ua",
+        password: "456",
+        email: "andrew.pshinka@geo-alliance.com.ua",
+        phone: "+38067*******",
+        roleId: 1,
+        isActive: true
+    },
+    {
+        isAdmin: false,
+        customerId: 2,
+        id: 1,
+        name: "bs08@ukr.net",
+        password: "123",
+        email: "bs08@ukr.net",
+        phone: "+38063*******",
+        roleId: 2,
+        isActive: true
+    },
+    {
+        isAdmin: false,
+        customerId: 2,
+        id: 2,
+        name: "l.savostyan@ukr.net",
+        password: "456",
+        email: "l.savostyan@ukr.net",
+        phone: "+38063*******",
+        roleId: 1,
+        isActive: true
+    },
+    {
+        isAdmin: true,
+        customerId: 0,
+        id: 1,
+        name: "admin",
+        password: "123",
+        email: "bs08@ukr.net",
+        phone: "+38063*******",
+        roleId: undefined,
+        isActive: true
+    }
+];
+let projects = [
+    {
+        customerID: 2,
+        id: 1,
+        name: "7S",
+        charId: "7S"
+    },
+    {
+        customerID: 2,
+        id: 2,
+        name: "Olga",
+        charId: "OLG"
+    },
+    {
+        customerID: 2,
+        id: 3,
+        name: "Kradojon",
+        charId: "KRJ"
+    },
+    {
+        customerID: 1,
+        id: 1,
+        name: "General project",
+        charId: "GA"
+    }
+];
+const getProjects = (params) => {
+    return projects.filter((project) => {
+        return (!params.charId || project.charId === params.charId)
+            && (!params.customerID || project.customerID === params.customerID)
+            && (!params.id || project.id === params.id)
+            && (!params.name || project.name === params.name);
+    });
+};
+/* unused harmony export getProjects */
+
+const deprecatedCustomer = (data) => {
+    let { internalRoutesGet, externalRoutesGet } = __WEBPACK_IMPORTED_MODULE_0__routes__;
+    let deprNames = ["login", ...internalRoutesGet, ...externalRoutesGet];
+    let itsRoute = !!deprNames.find((route) => data.route === route);
+    if (itsRoute) {
+        return data.route.toUpperCase() + " is deprecated URL. Please enter other one.";
+    }
+    ;
+    let itsPost = data.route.toLowerCase().endsWith("-post");
+    if (itsPost) {
+        return "URL should not contain \"-post\"";
+    }
+    ;
+};
+const applyNewCustomer = (data) => {
+    let err = deprecatedCustomer(data);
+    if (err) {
+        return err;
+    }
+    ;
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = applyNewCustomer;
+
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_fs__);
 
 const renderView = (res, view = "home", layout = "") => {
@@ -181,13 +349,13 @@ const getStatic = (req, res, theRoute = "") => {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -215,9 +383,9 @@ app.use("/public", __WEBPACK_IMPORTED_MODULE_0_express__["static"](pathname));
 let optionsUrlencoded = { extended: false };
 app.use(__WEBPACK_IMPORTED_MODULE_2_body_parser__["urlencoded"](optionsUrlencoded));
 //app.use(bodyParser.json());
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["a" /* invokeExternalRoutesGet */])(app);
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["b" /* invokeInternalRoutesGet */])(app);
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["c" /* invokeExternalRoutesPost */])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["invokeExternalRoutesGet"])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["invokeInternalRoutesGet"])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["invokeExternalRoutesPost"])(app);
 app.listen(process.env.PORT || 3000, () => {
     console.log("Приклад застосунку, який прослуховує 3000-ий порт!");
 });

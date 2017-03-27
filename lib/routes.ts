@@ -1,9 +1,10 @@
+import * as db from "./db";
 import * as core from "express-serve-static-core";
 import { renderView, getStatic } from "./views";
 
-let internalRoutesGet: string[] = ["projects", "projects/:id"];
-let externalRoutesGet: string[] = ["", "home", "apply", "about", "contacts", "info1", "info2", "info3"];
-let externalRoutesPost: string[] = ["apply-post", ":customer/login-post"];
+export let internalRoutesGet: string[] = ["projects", "projects/:id"];
+export let externalRoutesGet: string[] = ["", "home", "apply", "about", "contacts", "info1", "info2", "info3"];
+//let externalRoutesPost: string[] = ["apply-post", ":customer/login-post"];
 
 const invokeRouteGet = (app: core.Express, theRoute: string, view: string, layout: string = "") => {
     app.get("/" + theRoute, (req, res) => {
@@ -41,7 +42,12 @@ export const invokeInternalRoutesGet = (app: core.Express) => {
 
 export const invokeExternalRoutesPost = (app: core.Express) => {
     app.post("/apply-post", (req: core.Request, res: core.Response) => {
-        res.redirect(303, "/");
+        let err: string = db.applyNewCustomer(req.body);
+        if (err) {
+            res.send(400, err);
+        } else {
+            res.redirect(303, "/");
+        }
     });
 
     app.post("/:customer/login-post", (req: core.Request, res: core.Response) => {

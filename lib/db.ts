@@ -1,3 +1,5 @@
+import * as routes from "./routes";
+
 type access = "none" | "read" | "write";
 
 interface IRoles {
@@ -160,7 +162,7 @@ let projects: IProjects[] = [
     }
 ];
 
-export const getProjects = async (params: IProjects) =>  {
+export const getProjects = (params: IProjects) => {
     return projects.filter((project: IProjects) => {
         return (!params.charId || project.charId === params.charId)
             && (!params.customerID || project.customerID === params.customerID)
@@ -169,5 +171,22 @@ export const getProjects = async (params: IProjects) =>  {
     });
 };
 
+const deprecatedCustomer = (data) => {
+    let { internalRoutesGet, externalRoutesGet } = routes;
+    let deprNames: string[] = ["login", ...internalRoutesGet, ...externalRoutesGet];
+    let itsRoute: boolean = !!deprNames.find((route) => data.route === route);
+    if (itsRoute) { return data.route.toUpperCase() + " is deprecated URL. Please enter other one." };
+
+    let itsPost: boolean = data.route.toLowerCase().endsWith("-post");
+    if (itsPost) {return "URL should not contain \"-post\""};
+};
+
+export const applyNewCustomer = (data) => {
+
+    let err: string = deprecatedCustomer(data);
+    if (err) {
+        return err;
+    };
+};
 
 
