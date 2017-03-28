@@ -171,22 +171,31 @@ export const getProjects = (params: IProjects) => {
     });
 };
 
+export const customerUrlExist = (url: string) => {
+    return !!customers.find((item) => {
+        return item.route.toLowerCase() === url.toLowerCase();
+    });
+};
+
 const deprecatedCustomer = (data) => {
+    let url: string = data.route;
     let { internalRoutesGet, externalRoutesGet } = routes;
     let deprNames: string[] = ["login", ...internalRoutesGet, ...externalRoutesGet];
-    let itsRoute: boolean = !!deprNames.find((route) => data.route === route);
-    if (itsRoute) { return data.route.toUpperCase() + " is deprecated URL. Please enter other one." };
+    let itsRoute: boolean = !!deprNames.find((route) => url === route);
+    if (itsRoute) { return url.toUpperCase() + " is deprecated URL. Please enter other one." };
 
-    let itsPost: boolean = data.route.toLowerCase().endsWith("-post");
-    if (itsPost) {return "URL should not contain \"-post\""};
+    let itsPost: boolean = url.toLowerCase().endsWith("-post");
+    if (itsPost) { return "URL should not contain \"-post\"" };
+
+    if (customerUrlExist(url)) { return "URL \"" + url.toUpperCase() + "\" allready exist. Please enter other one." };
+
+    customers = [...customers, Object.assign({}, data)];
 };
 
 export const applyNewCustomer = (data) => {
 
     let err: string = deprecatedCustomer(data);
-    if (err) {
-        return err;
-    };
+    if (err) { return err; };
 };
 
 

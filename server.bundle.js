@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -72,8 +72,8 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__db__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__views__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__db__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__views__ = __webpack_require__(7);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "internalRoutesGet", function() { return internalRoutesGet; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "externalRoutesGet", function() { return externalRoutesGet; });
 
@@ -81,8 +81,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 let internalRoutesGet = ["projects", "projects/:id"];
 let externalRoutesGet = ["", "home", "apply", "about", "contacts", "info1", "info2", "info3"];
 //let externalRoutesPost: string[] = ["apply-post", ":customer/login-post"];
-const invokeRouteGet = (app, theRoute, view, layout = "") => {
+const invokeRouteGet = (app, theRoute, view, layout) => {
     app.get("/" + theRoute, (req, res) => {
+        let url = req.params.customer || "";
+        if (url && !__WEBPACK_IMPORTED_MODULE_0__db__["a" /* customerUrlExist */](url)) {
+            let err = "URL \"" + url.toUpperCase() + "\" does not exist. Please enter other one.";
+            res.setHeader("Content-Type", "text/plain");
+            res.send(400, err);
+            return;
+        }
+        ;
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__views__["a" /* renderView */])(res, view, layout);
     });
 };
@@ -92,17 +100,17 @@ const invokeStaticGet = (app, theRoute) => {
     });
 };
 const invokeExternalRoutesGet = (app) => {
-    invokeRouteGet(app, ":customer/login", "login");
+    invokeRouteGet(app, ":customer/login", "login", "external");
     invokeStaticGet(app, ":customer/login");
     externalRoutesGet.forEach((theRoute) => {
-        invokeRouteGet(app, theRoute, theRoute);
+        invokeRouteGet(app, theRoute, theRoute, "external");
         invokeStaticGet(app, theRoute);
     });
 };
 /* harmony export (immutable) */ __webpack_exports__["invokeExternalRoutesGet"] = invokeExternalRoutesGet;
 
 const invokeInternalRoutesGet = (app) => {
-    invokeRouteGet(app, ":customer", "spa");
+    invokeRouteGet(app, ":customer", "spa", "internal");
     invokeStaticGet(app, ":customer");
     internalRoutesGet.forEach((theRoute) => {
         let path = ":customer/" + theRoute;
@@ -114,16 +122,26 @@ const invokeInternalRoutesGet = (app) => {
 
 const invokeExternalRoutesPost = (app) => {
     app.post("/apply-post", (req, res) => {
-        let err = __WEBPACK_IMPORTED_MODULE_0__db__["a" /* applyNewCustomer */](req.body);
+        let err = __WEBPACK_IMPORTED_MODULE_0__db__["b" /* applyNewCustomer */](req.body);
         if (err) {
+            res.setHeader("Content-Type", "text/plain");
             res.send(400, err);
+            return;
         }
         else {
             res.redirect(303, "/");
         }
     });
     app.post("/:customer/login-post", (req, res) => {
-        res.redirect(303, "/" + req.params.customer + "/projects");
+        let url = req.params.customer || "";
+        if (url && !__WEBPACK_IMPORTED_MODULE_0__db__["a" /* customerUrlExist */](url)) {
+            let err = "URL \"" + url.toUpperCase() + "\" does not exist. Please enter other one.";
+            res.setHeader("Content-Type", "text/plain");
+            res.send(400, err);
+            return;
+        }
+        ;
+        res.redirect(303, "/" + url + "/projects");
     });
 };
 /* harmony export (immutable) */ __webpack_exports__["invokeExternalRoutesPost"] = invokeExternalRoutesPost;
@@ -150,6 +168,18 @@ module.exports = require("express-handlebars");
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("serve-favicon");
+
+/***/ }),
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -287,19 +317,32 @@ const getProjects = (params) => {
 };
 /* unused harmony export getProjects */
 
+const customerUrlExist = (url) => {
+    return !!customers.find((item) => {
+        return item.route.toLowerCase() === url.toLowerCase();
+    });
+};
+/* harmony export (immutable) */ __webpack_exports__["a"] = customerUrlExist;
+
 const deprecatedCustomer = (data) => {
+    let url = data.route;
     let { internalRoutesGet, externalRoutesGet } = __WEBPACK_IMPORTED_MODULE_0__routes__;
     let deprNames = ["login", ...internalRoutesGet, ...externalRoutesGet];
-    let itsRoute = !!deprNames.find((route) => data.route === route);
+    let itsRoute = !!deprNames.find((route) => url === route);
     if (itsRoute) {
-        return data.route.toUpperCase() + " is deprecated URL. Please enter other one.";
+        return url.toUpperCase() + " is deprecated URL. Please enter other one.";
     }
     ;
-    let itsPost = data.route.toLowerCase().endsWith("-post");
+    let itsPost = url.toLowerCase().endsWith("-post");
     if (itsPost) {
         return "URL should not contain \"-post\"";
     }
     ;
+    if (customerUrlExist(url)) {
+        return "URL \"" + url.toUpperCase() + "\" allready exist. Please enter other one.";
+    }
+    ;
+    customers = [...customers, Object.assign({}, data)];
 };
 const applyNewCustomer = (data) => {
     let err = deprecatedCustomer(data);
@@ -308,16 +351,16 @@ const applyNewCustomer = (data) => {
     }
     ;
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = applyNewCustomer;
+/* harmony export (immutable) */ __webpack_exports__["b"] = applyNewCustomer;
 
 
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_fs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_fs__);
 
 const renderView = (res, view = "home", layout = "") => {
@@ -349,13 +392,13 @@ const getStatic = (req, res, theRoute = "") => {
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -366,8 +409,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_express_handlebars___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_express_handlebars__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_body_parser__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_body_parser__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__lib_routes__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_serve_favicon__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_serve_favicon___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_serve_favicon__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_path__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_path__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__lib_routes__ = __webpack_require__(0);
 /*jshint esversion: 6 */
+
+
 
 
 
@@ -379,13 +428,14 @@ const app = __WEBPACK_IMPORTED_MODULE_0_express__();
 app.engine("handlebars", handlebars.engine);
 app.set("view engine", "handlebars");
 let pathname = __dirname + "/public";
+app.use(__WEBPACK_IMPORTED_MODULE_3_serve_favicon__(__WEBPACK_IMPORTED_MODULE_4_path__["join"](__dirname, "public", "favicon.ico")));
 app.use("/public", __WEBPACK_IMPORTED_MODULE_0_express__["static"](pathname));
 let optionsUrlencoded = { extended: false };
 app.use(__WEBPACK_IMPORTED_MODULE_2_body_parser__["urlencoded"](optionsUrlencoded));
 //app.use(bodyParser.json());
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["invokeExternalRoutesGet"])(app);
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["invokeInternalRoutesGet"])(app);
-__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__lib_routes__["invokeExternalRoutesPost"])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib_routes__["invokeExternalRoutesGet"])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib_routes__["invokeInternalRoutesGet"])(app);
+__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__lib_routes__["invokeExternalRoutesPost"])(app);
 app.listen(process.env.PORT || 3000, () => {
     console.log("Приклад застосунку, який прослуховує 3000-ий порт!");
 });
